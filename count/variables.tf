@@ -57,3 +57,29 @@ variable "tags" {
         environment = "dev"
     }
 }
+
+variable "instance" {
+    type = list 
+    default = ["catalogue", "mongodb", "mysql", "user", "cart", "redis", "shipping", "payment", "frontend", "rabbitmq"]
+  
+}
+
+variable "zone_id" {
+  default = "Z005336437MHJ16KCQQI8"
+}
+
+variable "domain_name" {
+  default = "jai01.online"
+}
+
+
+variable "fruits_name" {                         # list will allow the duplicate valves
+    type = list(string)
+    default = ["apple", "banana", "orange", "apple", ]
+}
+
+variable "fruits_set" {                           # set will not allow the duplicate valves
+    type = set(string)
+    default = [ "apple", "banana", "orange", "apple", ]
+  
+}
