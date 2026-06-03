@@ -1,0 +1,37 @@
+resource "aws_instance" "example" {
+  ami           = data.aws_ami.joindevops.id 
+  instance_type = "t3.micro"
+  vpc_security_group_ids = [aws_security_group.my_sg.id]
+
+  tags = {
+    Name = "MyTerraform"
+    project = "roboshop"
+  }
+}
+
+resource "aws_security_group" "my_sg" {
+  name        = "my-security-group"
+  description = "Allow SSH and HTTP traffic"
+
+  ingress {
+    description = "Allow SSH"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"] 
+  }
+
+  egress {
+    description = "Allow all outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"] 
+  }
+
+  tags = {
+    Name = "MySecurityGroup"
+  }
+}
