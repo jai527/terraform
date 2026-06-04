@@ -1,12 +1,9 @@
-resource "aws_instance" "MyTerraform" {
-  ami           = data.aws_ami.joindevops.id 
-  instance_type = "t3.micro"
+resource "aws_instance" "example" {
+  ami           = local.ami
+  instance_type = local.instance_type
   vpc_security_group_ids = [aws_security_group.my_sg.id]
 
-  tags = {
-    Name = "MyTerraform"
-    project = "roboshop"
-  }
+  tags = local.ec2_final_tags
 }
 
 resource "aws_security_group" "my_sg" {
