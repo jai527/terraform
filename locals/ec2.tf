@@ -9,6 +9,7 @@ resource "aws_instance" "example" {
 resource "aws_security_group" "my_sg" {
   name        = "my-security-group"
   description = "Allow SSH and HTTP traffic"
+  
 
   ingress {
     description = "Allow SSH"

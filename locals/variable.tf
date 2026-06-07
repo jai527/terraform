@@ -17,7 +17,6 @@ variable "sg_tags" {
         environment = "prod"
     
     }
-  
 }
 
 variable "ec2_tags" {
