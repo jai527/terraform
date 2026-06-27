@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
 # ✅ VPC
 resource "aws_vpc" "my_vpc" {
   cidr_block = "10.0.0.0/16"
@@ -14,9 +10,10 @@ resource "aws_internet_gateway" "igw" {
 
 # ✅ Subnet (Public)
 resource "aws_subnet" "public_subnet" {
-  vpc_id                  = aws_vpc.my_vpc.id
-  cidr_block              = "10.0.1.0/24"
-  map_public_ip_on_launch = true
+    vpc_id                  = aws_vpc.my_vpc.id
+    cidr_block              = "10.0.1.0/24"
+    availability_zone       = "us-east-1a"
+    map_public_ip_on_launch = true
 }
 
 # ✅ Route Table
@@ -71,29 +68,31 @@ resource "aws_instance" "docker_ec2" {
   }
 
   user_data = <<-EOF
-              #!/bin/bash
+user_data = <<-EOF
+#!/bin/bash
 
-              dnf update -y
+yum update -y
 
-              # Install Docker
-              sudo dnf -y install dnf-plugins-core
-              sudo dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-              sudo dnf install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker ec2-user
+# Install Docker (simple & reliable)
+yum install -y docker
+systemctl start docker
+systemctl enable docker
+usermod -aG docker ec2-user
 
-              # Extend disk
-              growpart /dev/nvme0n1 4
-              pvresize /dev/nvme0n1p4
+# Install LVM tools
+yum install -y lvm2 cloud-utils-growpart
 
-              # Remove /home
-              lvremove -y /dev/RootVG/homeVol
+# Extend disk
+growpart /dev/nvme0n1 4
+pvresize /dev/nvme0n1p4
 
-              # Extend /var
-              lvextend -r -L +30G /dev/RootVG/varVol
+# Remove /home (only if empty)
+lvremove -y /dev/RootVG/homeVol
 
-              EOF
+# Extend /var
+lvextend -r -L +30G /dev/RootVG/varVol
+
+EOF
 
   tags = {
     Name = "Docker-EC2"
